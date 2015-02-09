@@ -16,11 +16,12 @@ package opentsdb
 
 import (
 	"fmt"
-	"github.com/mozilla-services/heka/message"
-	. "github.com/mozilla-services/heka/pipeline"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/mozilla-services/heka/message"
+	. "github.com/mozilla-services/heka/pipeline"
 )
 
 // Decoder that expects OpenTSDB string format data in the message payload,
@@ -86,6 +87,9 @@ func (d *OpenTsdbRawDecoder) Decode(pack *PipelinePack) (packs []*PipelinePack,
 		return
 	}
 	pack.Message.SetTimestamp(time.Unix(int64(unixTime), 0).UnixNano())
+
+	// Reset Fields
+	pack.Message.Fields = make([]*message.Field, 0)
 
 	// Add metric to the main message.
 	if err = d.addStatField(pack, "Metric", fields[0]); err != nil {
